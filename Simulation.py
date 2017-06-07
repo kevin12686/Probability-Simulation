@@ -1,4 +1,8 @@
+import random
+
+
 class Simulation(object):
+    #Only Times and TH can be modified
     Times = 50000
     TH = 40
     CSTime = 3
@@ -12,15 +16,17 @@ class Simulation(object):
         self.Theory_Value = self.theory()
 
     def __repr__(self):
-        return 'Theory Value:{}, Total Times:{}, At Least Rolls:{}, Consecutive Times:{}, Success:{}'.format(self.Theory_Value, self.Times, self.TH, self.CSTime, self.Success)
+        return 'Theory Value:{}, Total Times:{}, At Least Rolls:{}, Consecutive Times:{}, Success:{}'.format(
+            self.Theory_Value, self.Times, self.TH, self.CSTime, self.Success)
 
     @staticmethod
     def roll():
-        import random
         return random.randint(1, 6)
 
     def theory(self):
         from Tree import Node
+        sum = 2 / 27
+
         def Deeper(N):
             if N.Left is not None:
                 N.Left = Deeper(N.Left)
@@ -46,8 +52,8 @@ class Simulation(object):
         root = Node(one=True, value=5 / 216)
         for each in range(5, self.TH - 1):
             root = Deeper(root)
-        root = Calculate(root)
-        return round(1 - root.Value, 6)
+            sum += Calculate(root).Value
+        return round(1 - sum, 6)
 
     def process(self):
         success = 0
@@ -56,15 +62,15 @@ class Simulation(object):
             last = 0
             n = 0
             while count < self.CSTime and n < self.TH:
-                n = n + 1
+                n += 1
                 num = self.roll()
                 if last != num:
                     last = num
                     count = 0
                 else:
-                    count = count + 1
+                    count += 1
             if n >= self.TH:
-                success = success + 1
+                success += 1
         self.Success = success
         return round(success / self.Times, 6)
 
